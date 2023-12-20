@@ -1,77 +1,15 @@
 console.clear();
-
 import { faker } from "https://cdn.skypack.dev/@faker-js/faker";
-
-// function createTweet() {
-
-//   const tweet = {
-//   user: {
-//     displayName: createName(),
-//     useName: faker.internet.displayName(),
-//     isVerified: isVerified(),
-//     profilePicture: faker.image.urlLoremFlickr()
-//   },
-//   post: {
-//     text: faker.lorem.text(),
-//     picture: ``
-//   },
-//     dateCreated: faker.date.anytime(),
-//     views: faker.number.int(100000),
-//     retweets: faker.number.int(100000),
-//     saves: faker.number.int(100000),
-//     comments:[
-//   {
-//     user: {
-//     displayName: createName(),
-//     useName: faker.internet.displayName(),
-//     isVerified: isVerified(),
-//     profilePicture: faker.image.urlLoremFlickr()
-//   },
-//   post: {
-//     text: faker.lorem.text(),
-//     picture: faker.internet.avatar(),
-//   },
-//     dateCreated: faker.date.anytime(),
-//     views: faker.number.int(100000),
-//     retweets: faker.number.int(100000),
-//     saves: faker.number.int(100000),
-
-// }
-//   ]
-// };
-
-//   return tweet;
-
-// }
-
-// function createName() {
-
-//   const firstName = faker.person.firstName();
-//   const lastName = faker.person.lastName();
-//   const fullName = firstName + ' ' + lastName;
-//   return fullName;
-// }
-
-// function isVerified() {
-//   const randomNumber = Math.floor((Math.random() * 100));
-//   if (randomNumber % 2 === 0) {
-//     return true;
-//   } else {
-//     return false;
-//   }
-// }
-
-// console.log(createTweet())
-
-const userData = $(".user-data");
-const postData = $(".post-data");
-const metaData = $(".meta-data");
-
-const comments = $(".comments");
-
 function $(selector) {
   return document.querySelector(selector);
 }
+const userData = $(".user-data");
+const postData = $(".post-data");
+const retweets = $(".retweets");
+const commentsCount = $(".comments-count");
+const showComments = $(".show-comments");
+
+const comments = $(".comments");
 
 const tweet = {
   user: {
@@ -107,6 +45,13 @@ const tweet = {
           },
           text: faker.lorem.lines(),
           retweets: faker.number.int(100)
+        },
+        {
+          user: {
+            userName: faker.internet.displayName()
+          },
+          text: faker.lorem.lines(),
+          retweets: faker.number.int(100)
         }
       ]
     }
@@ -115,7 +60,15 @@ const tweet = {
 
 userData.innerText = tweet.user.userName;
 postData.innerText = tweet.text;
-metaData.innerText = tweet.retweets;
+retweets.innerText = tweet.retweets;
+
+let totalComments = tweet.comments.length;
+
+tweet.comments.forEach(function (comment) {
+  totalComments += comment.replies.length;
+});
+
+commentsCount.innerText = totalComments;
 
 function $$(type, text) {
   const element = document.createElement(type);
@@ -125,24 +78,37 @@ function $$(type, text) {
   return element;
 }
 
-tweet.comments.forEach(function (comment) {
-  const li = $$("li");
-  const userName = $$("h3", comment.user.userName);
-  const text = $$("p", comment.text);
-  const replies = $$("ul");
-  comment.replies.forEach(function (reply) {
+showComments.addEventListener("click", function () {
+  if (comments.innerHTML.length) {
+    comments.innerHTML = "";
+  } else {
+    tweet.comments.forEach(function (comment) {
       const li = $$("li");
+      const username = $$("h3", comment.user.userName);
+      const text = $$("p", comment.text);
+      const replies = $$("ul");
 
-    const userName = $$("h3", reply.user.userName);
-    const text = $$("p", reply.text);
-     li.appendChild(userName);
-  li.appendChild(text);
-    replies.appendChild(li)
-  });
+      comment.replies.forEach(function (reply) {
+        const li = $$("li");
+        const username = $$("h3", reply.user.userName);
+        const text = $$("p", reply.text);
+        li.appendChild(username);
+        li.appendChild(text);
+        replies.appendChild(li);
+      });
+      li.appendChild(username);
+      li.appendChild(text);
+      if (comment.replies.length > 1) {
+        const seeRepliesButton = $$(
+          "button",
+          `See ${comment.replies.length} replies`
+        );
+        li.appendChild(seeRepliesButton);
+      }
 
-  li.appendChild(userName);
-  li.appendChild(text);
-  li.appendChild(replies);
+      li.appendChild(replies);
 
-  comments.appendChild(li);
+      comments.appendChild(li);
+    });
+  }
 });
