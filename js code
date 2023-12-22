@@ -87,85 +87,40 @@ function createReply(user, reply) {
   return li;
 }
 
-// showComments.addEventListener("click", function () {
-//   if (comments.innerHTML.length) {
-//     comments.innerHTML = "";
-//   } else {
-//     tweet.comments.forEach(function (comment) {
-//       const li = $$("li");
-//       const username = $$("h5", comment.user.userName);
-//       const text = $$("p", comment.text);
-//       const replies = $$("ul");
-
-//       li.appendChild(username);
-//       li.appendChild(text);
-
-//       if (comment.replies.length > 1) {
-//         const seeRepliesButton = $$(
-//           "button",
-//           `See ${comment.replies.length} replies`
-//         );
-//         li.appendChild(seeRepliesButton);
-
-//         seeRepliesButton.addEventListener("click", function () {
-//           if (replies.innerHTML.length) {
-//             replies.innerHTML = ``;
-//           } else {
-//             comment.replies.forEach(function (reply) {
-
-//              replies.appendChild(createReply(reply.user.userName, reply.text));
-//             });
-//           }
-//         });
-//       } else {
-//         comment.replies.forEach(function (reply) {
-//           //
-//           replies.appendChild(createReply(reply.user.userName, reply.text));
-//         });
-//       }
-
-//       li.appendChild(replies);
-//       comments.appendChild(li);
-//     });
-//   }
-// });
+function createReplies(replies) {
+  return function (reply) {
+    replies.appendChild(createReply(reply.user.userName, reply.text));
+  };
+}
 
 showComments.addEventListener("click", function () {
-  if (comments.innerHTML) {
-    comments.innerHTML = ` `;
+  if (comments.innerHTML.length) {
+    comments.innerHTML = "";
   } else {
     tweet.comments.forEach(function (comment) {
       const li = $$("li");
-      const username = $$("h5", comment.user.userName);
+      const username = $$("h3", comment.user.userName);
       const text = $$("p", comment.text);
       const replies = $$("ul");
+      li.appendChild(username);
+      li.appendChild(text);
 
-      if (comment.replies > 1) {
-        const seeRepliesButton = $$("button", `see ${comment.replies.length}`);
+      if (comment.replies.length > 1) {
+        const seeRepliesButton = $$(
+          "button",
+          `See ${comment.replies.length} replies`
+        );
         li.appendChild(seeRepliesButton);
+
         seeRepliesButton.addEventListener("click", function () {
           if (replies.innerHTML.length) {
-            replies.innerHTML = ` `;
+            replies.innerHTML = "";
           } else {
-            comment.replies.forEach(function (reply) {
-              const li = $$("li");
-              const userName = $$("h5", comment.user.userName);
-              const text = $$("p", comment.text);
-              li.appendChild(username);
-              li.appendChild(text);
-              replies.appendChild(li);
-            });
+            comment.replies.forEach(createReplies(replies));
           }
         });
       } else {
-        comment.replies.forEach(function (reply) {
-          const li = $$("li");
-          const userName = $$("h5", comment.user.userName);
-          const text = $$("p", comment.text);
-          li.appendChild(username);
-          li.appendChild(text);
-          replies.appendChild(li);
-        });
+        comment.replies.forEach(createReplies(replies));
       }
       li.appendChild(replies);
       comments.appendChild(li);
