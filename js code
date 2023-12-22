@@ -78,36 +78,96 @@ function $$(type, text) {
   return element;
 }
 
+function createReply(user, reply) {
+  const li = $$("li");
+  const username = $$("h3", user);
+  const text = $$("p", reply);
+  li.appendChild(username);
+  li.appendChild(text);
+  return li;
+}
+
+// showComments.addEventListener("click", function () {
+//   if (comments.innerHTML.length) {
+//     comments.innerHTML = "";
+//   } else {
+//     tweet.comments.forEach(function (comment) {
+//       const li = $$("li");
+//       const username = $$("h5", comment.user.userName);
+//       const text = $$("p", comment.text);
+//       const replies = $$("ul");
+
+//       li.appendChild(username);
+//       li.appendChild(text);
+
+//       if (comment.replies.length > 1) {
+//         const seeRepliesButton = $$(
+//           "button",
+//           `See ${comment.replies.length} replies`
+//         );
+//         li.appendChild(seeRepliesButton);
+
+//         seeRepliesButton.addEventListener("click", function () {
+//           if (replies.innerHTML.length) {
+//             replies.innerHTML = ``;
+//           } else {
+//             comment.replies.forEach(function (reply) {
+
+//              replies.appendChild(createReply(reply.user.userName, reply.text));
+//             });
+//           }
+//         });
+//       } else {
+//         comment.replies.forEach(function (reply) {
+//           //
+//           replies.appendChild(createReply(reply.user.userName, reply.text));
+//         });
+//       }
+
+//       li.appendChild(replies);
+//       comments.appendChild(li);
+//     });
+//   }
+// });
+
 showComments.addEventListener("click", function () {
-  if (comments.innerHTML.length) {
-    comments.innerHTML = "";
+  if (comments.innerHTML) {
+    comments.innerHTML = ` `;
   } else {
     tweet.comments.forEach(function (comment) {
       const li = $$("li");
-      const username = $$("h3", comment.user.userName);
+      const username = $$("h5", comment.user.userName);
       const text = $$("p", comment.text);
       const replies = $$("ul");
 
-      comment.replies.forEach(function (reply) {
-        const li = $$("li");
-        const username = $$("h3", reply.user.userName);
-        const text = $$("p", reply.text);
-        li.appendChild(username);
-        li.appendChild(text);
-        replies.appendChild(li);
-      });
-      li.appendChild(username);
-      li.appendChild(text);
-      if (comment.replies.length > 1) {
-        const seeRepliesButton = $$(
-          "button",
-          `See ${comment.replies.length} replies`
-        );
+      if (comment.replies > 1) {
+        const seeRepliesButton = $$("button", `see ${comment.replies.length}`);
         li.appendChild(seeRepliesButton);
+        seeRepliesButton.addEventListener("click", function () {
+          if (replies.innerHTML.length) {
+            replies.innerHTML = ` `;
+          } else {
+            comment.replies.forEach(function (reply) {
+              const li = $$("li");
+              const userName = $$("h5", comment.user.userName);
+              const text = $$("p", comment.text);
+              li.appendChild(username);
+              li.appendChild(text);
+              replies.appendChild(li);
+            });
+          }
+        });
+      } else {
+        comment.replies.forEach(function (reply) {
+          const li = $$("li");
+          const userName = $$("h5", comment.user.userName);
+          const text = $$("p", comment.text);
+          li.appendChild(username);
+          li.appendChild(text);
+          replies.appendChild(li);
+        });
       }
-
       li.appendChild(replies);
-
       comments.appendChild(li);
     });
   }
