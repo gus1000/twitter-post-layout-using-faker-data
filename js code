@@ -87,21 +87,16 @@ function createReply(user, reply) {
   return li;
 }
 
-function createReplies(replies) {
-  return function (reply) {
-    replies.appendChild(createReply(reply.user.userName, reply.text));
-  };
-}
-
 showComments.addEventListener("click", function () {
   if (comments.innerHTML.length) {
     comments.innerHTML = "";
   } else {
     tweet.comments.forEach(function (comment) {
       const li = $$("li");
-      const username = $$("h3", comment.user.userName);
+      const username = $$("h5", comment.user.userName);
       const text = $$("p", comment.text);
       const replies = $$("ul");
+
       li.appendChild(username);
       li.appendChild(text);
 
@@ -114,14 +109,21 @@ showComments.addEventListener("click", function () {
 
         seeRepliesButton.addEventListener("click", function () {
           if (replies.innerHTML.length) {
-            replies.innerHTML = "";
+            replies.innerHTML = ``;
           } else {
-            comment.replies.forEach(createReplies(replies));
+            comment.replies.forEach(function (reply) {
+        
+             replies.appendChild(createReply(reply.user.userName, reply.text));
+            });
           }
         });
       } else {
-        comment.replies.forEach(createReplies(replies));
+        comment.replies.forEach(function (reply) {
+          //
+          replies.appendChild(createReply(reply.user.userName, reply.text));
+        });
       }
+
       li.appendChild(replies);
       comments.appendChild(li);
     });
